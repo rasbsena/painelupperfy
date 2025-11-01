@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Upperfy - Cliente</title>
+    
+    <!-- Google Fonts - Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <style>
+        /* ========================================
+           VARIÁVEIS CSS - IDENTIDADE VISUAL
+        ======================================== */
+        :root {
+            --cor-primaria: #270949;
+            --cor-secundaria: #F93D00;
+            --cor-fundo: #f8f9fa;
+            --cor-texto: #333333;
+            --cor-texto-claro: #666666;
+            --cor-borda: #e0e0e0;
+            --cor-branco: #ffffff;
+            --fonte-principal: 'Montserrat', sans-serif;
+            --sombra-card: 0 2px 8px rgba(0,0,0,0.08);
+            --sombra-hover: 0 4px 16px rgba(0,0,0,0.12);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        /* ========================================
+           RESET E BASE
+        ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--fonte-principal);
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            line-height: 1.6;
+        }
+
+        /* ========================================
+           MENU SUPERIOR FIXO
+        ======================================== */
+        .menu-superior {
+            background-color: var(--cor-primaria);
+            color: var(--cor-branco);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .menu-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--cor-branco);
+        }
+
+        .menu-logo svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .menu-nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .menu-nav a {
+            color: var(--cor-branco);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+
+        .menu-nav a:hover {
+            background-color: rgba(255,255,255,0.1);
+            color: var(--cor-secundaria);
+        }
+
+        /* ========================================
+           CONTAINER PRINCIPAL
+        ======================================== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 2rem 2rem;
+        }
+
+        /* ========================================
+           GRID LAYOUT
+        ======================================== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* ========================================
+           CARDS
+        ======================================== */
+        .card {
+            background: var(--cor-branco);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--sombra-card);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--sombra-hover);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--cor-primaria);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ========================================
+           CARD RESUMO DO PROJETO
+        ======================================== */
+        .projeto-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .info-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .info-icon {
+            color: var(--cor-secundaria);
+            min-width: 20px;
+            margin-top: 2px;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--cor-texto-claro);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--cor-texto);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .tag-app {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .tag-servidor {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .tag-web {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .tag-prioridade-alta {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .tag-prioridade-media {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+
+        .tag-prioridade-baixa {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .responsavel-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background-color: var(--cor-primaria);
+            color: var(--cor-branco);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        /* ========================================
+           CRONOGRAMA / TIMELINE
+        ======================================== */
+        .cronograma-container {
+            min-height: 500px;
+        }
+
+        .filtros {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filtro-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .filtro-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--cor-texto-claro);
+            text-transform: uppercase;
+        }
+
+        .filtro-group select {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--cor-borda);
+            border-radius: 6px;
+            font-family: var(--fonte-principal);
+            font-size: 0.9rem;
+            background-color: var(--cor-branco);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filtro-group select:focus {
+            outline: none;
+            border-color: var(--cor-secundaria);
+        }
+
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .sprint-item {
+            border: 2px solid var(--cor-borda);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .sprint-item:hover {
+            border-color: var(--cor-secundaria);
+            background-color: #fafafa;
+            transform: translateX(4px);
+        }
+
+        .sprint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .sprint-titulo {
+            font-weight: 700;
+            color: var(--cor-primaria);
+            font-size: 1rem;
+        }
+
+        .sprint-datas {
+            font-size: 0.85rem;
+            color: var(--cor-texto-claro);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cor-secundaria), var(--cor-primaria));
+            transition: width 0.5s ease;
+        }
+
+        .sprint-info-mini {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--cor-texto-claro);
+        }
+
+        /* ========================================
+           MODAL
+        ======================================== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--cor-branco);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--cor-texto-claro);
+            transition: var(--transition);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .modal-close:hover {
+            color: var(--cor-secundaria);
+            background-color: #f0f0f0;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--cor-primaria);
+            margin-bottom: 1.5rem;
+            padding-right: 2rem;
+        }
+
+        .modal-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-section-title {
+            font-weight: 600;
+            color: var(--cor-primaria);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* ========================================
+           GRÁFICO
+        ======================================== */
+        .grafico-container {
+            margin-top: 2rem;
+        }
+
+        .grafico-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        /* ========================================
+           BOTÕES
+        ======================================== */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-family: var(--fonte-principal);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background-color: var(--cor-secundaria);
+            color: var(--cor-branco);
+        }
+
+        .btn-primary:hover {
+            background-color: #d63400;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(249,61,0,0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--cor-primaria);
+            color: var(--cor-branco);
+        }
+
+        .btn-secondary:hover {
+            background-color: #1a0630;
+            transform: translateY(-2px);
+        }
+
+        /* ========================================
+           ARQUIVOS COMPARTILHADOS
+        ======================================== */
+        .arquivos-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .arquivo-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            border: 1px solid var(--cor-borda);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .arquivo-item:hover {
+            border-color: var(--cor-secundaria);
+            background-color: #fafafa;
+        }
+
+        .arquivo-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .arquivo-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--cor-primaria);
+            color: var(--cor-branco);
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.7rem;
+        }
+
+        .arquivo-nome {
+            font-weight: 500;
+        }
+
+        .arquivo-link {
+            color: var(--cor-secundaria);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .arquivo-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ========================================
+           COMENTÁRIOS
+        ======================================== */
+        .comentarios-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .comentario-item {
+            border-left: 4px solid var(--cor-secundaria);
+            padding: 1rem;
+            background-color: #fafafa;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .comentario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .comentario-autor {
+            font-weight: 700;
+            color: var(--cor-primaria);
+        }
+
+        .comentario-data {
+            font-size: 0.85rem;
+            color: var(--cor-texto-claro);
+        }
+
+        .comentario-texto {
+            color: var(--cor-texto);
+            line-height: 1.6;
+        }
+
+        /* ========================================
+           RESPONSIVIDADE
+        ======================================== */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-nav {
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 5rem 1rem 1rem;
+            }
+
+            .menu-superior {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .menu-nav {
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+            }
+
+            .menu-nav a {
+                width: 100%;
+                text-align: center;
+            }
+
+            .filtros {
+                flex-direction: column;
+            }
+
+            .sprint-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+                width: 95%;
+            }
+        }
+
+        /* ========================================
+           UTILITÁRIOS
+        ======================================== */
+        .mb-1 { margin-bottom: 1rem; }
+        .mb-2 { margin-bottom: 2rem; }
+        .text-center { text-align: center; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- ========================================
+         📝 INSTRUÇÕES DE CUSTOMIZAÇÃO
+         ========================================
+         Para personalizar este painel, altere as variáveis JavaScript 
+         declaradas no bloco abaixo. Todos os dados são FICTÍCIOS.
+         
+         ⚠️ IMPORTANTE: Mantenha os formatos de data (YYYY-MM-DD) e 
+         estrutura dos arrays para garantir o funcionamento correto.
+    ======================================== -->
+    <script>
+        // ========================================
+        // ✏️ VARIÁVEIS DE CONFIGURAÇÃO DO PROJETO
+        // ========================================
+        // 📌 INSTRUÇÕES: Para atualizar o painel com dados reais, 
+        // altere APENAS os valores abaixo. O painel será atualizado automaticamente.
+        // Todos os dados atuais são FICTÍCIOS para demonstração.
+        // ========================================
+
+        // 📋 INFORMAÇÕES BÁSICAS DO PROJETO
+        // ════════════════════════════════════════
+        const projetoNome = "Upperchat - CRM (Krayin)";  // ✏️ Nome completo do projeto
+        const numeroID = "UPP2023-16";                    // ✏️ Número de identificação único
+        const tipoProjeto = ["App", "Servidor"];          // ✏️ Array com tipos (ex: ["App"], ["Web","Mobile"], etc)
+        const sprintFocus = "Beta Tests";                 // ✏️ Foco atual da sprint
+        const briefing = "CRM WhiteLabel para gestão de clientes e vendas com integração WhatsApp Business API. Sistema completo de pipeline, automações e relatórios.";  // ✏️ Descrição resumida
+        const empresaProjeto = "Upperchat Tecnologia";    // ✏️ Nome da empresa cliente
+
+        // 📚 DOCUMENTAÇÃO E REFERÊNCIAS
+        // ════════════════════════════════════════
+        const baseConhecimento = "Documentação técnica completa disponível no Notion com diagramas de arquitetura, fluxos de integração, guias de desenvolvimento e API reference. Acesso: https://notion.so/upperchat-docs (credenciais enviadas por email)";  // ✏️ Onde está a documentação
+        const referencias = "Principais referências de mercado: Salesforce (estrutura de pipeline e automações), HubSpot (onboarding e UX), Pipedrive (simplicidade e visualização), Zendesk (sistema de tickets), Intercom (chat em tempo real). Análise competitiva documentada.";  // ✏️ Produtos/projetos de referência
+
+        // 🎯 TAREFAS E PRIORIDADES
+        // ════════════════════════════════════════
+        const proximaTask = "Implementar autenticação de dois fatores (2FA) via SMS e ajustar fluxo de login com recuperação de senha aprimorada";  // ✏️ Próxima tarefa prioritária
+        const prioridade = "Alta";                        // ✏️ Opções: "Alta", "Média", "Baixa"
+
+        // 👥 EQUIPE E RESPONSÁVEIS
+        // ════════════════════════════════════════
+        const responsaveis = ["Osmin Pedro", "Renan Sena", "Carolina Silva"];  // ✏️ Array com nomes dos responsáveis
+
+        // 🆘 SUPORTE E CONTATOS
+        // ════════════════════════════════════════
+        const concierge = "Suporte dedicado disponível via Slack #upperchat-suporte (resposta em até 2h úteis) ou email: suporte@upperfy.com.br. Para emergências: WhatsApp (11) 99999-9999 (24/7)";  // ✏️ Informações de contato/suporte
+
+        // 📅 DATAS E IDENTIFICADORES
+        // ════════════════════════════════════════
+        const criadoEm = "2025-06-03T18:47:00";          // ✏️ Data de criação (formato: YYYY-MM-DDTHH:MM:SS)
+        const ultimaEdicao = "2025-11-01T12:39:00";      // ✏️ Última atualização (formato: YYYY-MM-DDTHH:MM:SS)
+        const duns = "123456789";                         // ✏️ Número D-U-N-S (identificador empresarial)
+
+        // 💬 COMENTÁRIOS DO PROJETO
+        // ════════════════════════════════════════
+        // ✏️ Array de objetos com comentários. Cada objeto precisa ter: autor, data (ISO), texto
+        const comentarios = [
+            {
+                autor: "Renan Sena",
+                data: "2025-11-01T12:00:00",
+                texto: "✅ Verificado possibilidade de integração com WhatsApp Business API. Testes iniciais bem-sucedidos com envio de mensagens em massa e templates aprovados. Aguardando aprovação final do Meta para produção. Prazo estimado: 2 semanas. Documentação de integração atualizada no Notion."
+            },
+            {
+                autor: "Osmin Pedro",
+                data: "2025-10-28T15:30:00",
+                texto: "🎉 Sprint 2 concluída com sucesso! Identificados 3 bugs menores relacionados ao filtro de clientes que serão corrigidos na próxima iteração. Performance geral está excelente - tempo de carregamento médio de 1.2s. Todos os testes de carga passaram com 500 usuários simultâneos."
+            },
+            {
+                autor: "Carolina Silva",
+                data: "2025-10-20T14:15:00",
+                texto: "📊 Análise de feedback dos usuários beta: 92% de satisfação geral! Principais solicitações: export de relatórios em PDF (alta prioridade), integração com Google Calendar (média prioridade), e modo escuro (baixa prioridade). Relatório completo compartilhado na pasta de arquivos."
+            },
+            {
+                autor: "Renan Sena",
+                data: "2025-10-15T09:15:00",
+                texto: "🚀 Iniciando fase de testes beta com 5 clientes selecionados: TechCorp (50 usuários), MarketPro (25 usuários), VendaMais (30 usuários), ConsultaBiz (15 usuários) e SalesHub (40 usuários). Feedback será coletado semanalmente através de formulários estruturados e reuniões 1-on-1."
+            },
+            {
+                autor: "Osmin Pedro",
+                data: "2025-10-08T11:30:00",
+                texto: "🔧 Implementação de cache Redis concluída! Redução de 65% no tempo de resposta das queries mais pesadas. Monitoramento configurado no Grafana. Sistema está estável e pronto para escalabilidade."
+            },
+            {
+                autor: "Carolina Silva",
+                data: "2025-10-01T10:00:00",
+                texto: "🎯 Projeto oficialmente iniciado! Todas as integrações de API foram mapeadas e priorizadas. Arquitetura do sistema revisada e aprovada pelo time técnico. Kickoff meeting realizado com todos os stakeholders - energy muito positiva!"
+            }
+        ];
+
+        // 🔗 LINKS E CONFIGURAÇÕES
+        // ════════════════════════════════════════
+        const linkSobreUpperfy = "https://www.upperfy.com.br";  // ✏️ Link para site da Upperfy
+        const linkMeuPerfil = "#perfil";                         // ✏️ Link para perfil do usuário
+
+        // 📅 CRONOGRAMA - SPRINTS QUINZENAIS
+        // ════════════════════════════════════════
+        // ✏️ Array de objetos representando cada sprint
+        // Campos obrigatórios: id, titulo, inicio (YYYY-MM-DD), fim (YYYY-MM-DD), 
+        // foco, prioridade, responsaveis (array), progresso (0-100), 
+        // tarefasPlanned, tarefasDone, nota
+        const sprints = [
+            {
+                id: 1,
+                titulo: "Sprint 1 - Integrações API e Infraestrutura Base",
+                inicio: "2025-10-01",
+                fim: "2025-10-14",
+                foco: "Integrações API",
+                prioridade: "Alta",
+                responsaveis: ["Osmin Pedro", "Renan Sena"],
+                progresso: 100,
+                tarefasPlanned: 12,
+                tarefasDone: 12,
+                nota: "✅ Sprint concluída com sucesso! Implementadas todas as integrações: WhatsApp Business API (webhooks + mensagens), Twilio (SMS backup), SendGrid (email transacional), Stripe (pagamentos), e AWS S3 (storage). Testes de integração passaram 100%. Documentação técnica completa no Notion com exemplos de código e postman collections."
+            },
+            {
+                id: 2,
+                titulo: "Sprint 2 - Beta Tests e Validação com Clientes",
+                inicio: "2025-10-15",
+                fim: "2025-10-28",
+                foco: "Beta Tests",
+                prioridade: "Alta",
+                responsaveis: ["Renan Sena", "Carolina Silva"],
+                progresso: 100,
+                tarefasPlanned: 15,
+                tarefasDone: 15,
+                nota: "✅ Testes beta realizados com 5 clientes piloto totalizando 160 usuários ativos. Feedback geral extremamente positivo (NPS 72). Identificados 8 bugs menores (todos corrigidos) e 12 melhorias de UX coletadas. Métricas de uso: 2.500 mensagens enviadas, 450 deals criados, 98.5% uptime. Relatório detalhado compartilhado."
+            },
+            {
+                id: 3,
+                titulo: "Sprint 3 - Refinamento de UX/UI e Acessibilidade",
+                inicio: "2025-10-29",
+                fim: "2025-11-11",
+                foco: "Design",
+                prioridade: "Média",
+                responsaveis: ["Carolina Silva", "Osmin Pedro"],
+                progresso: 75,
+                tarefasPlanned: 18,
+                tarefasDone: 13,
+                nota: "🔄 Em andamento. Refinamento completo da interface baseado em heatmaps e feedback dos usuários beta. Implementados: novo dashboard com widgets customizáveis, filtros avançados no pipeline, atalhos de teclado, e modo de visualização compacta. Faltam: ajustes no módulo de relatórios (3 tasks), otimização mobile (2 tasks). WCAG AA compliance atingido."
+            },
+            {
+                id: 4,
+                titulo: "Sprint 4 - Otimização de Performance e Escalabilidade",
+                inicio: "2025-11-12",
+                fim: "2025-11-25",
+                foco: "Performance",
+                prioridade: "Alta",
+                responsaveis: ["Osmin Pedro"],
+                progresso: 35,
+                tarefasPlanned: 10,
+                tarefasDone: 4,
+                nota: "🔄 Iniciando fase crítica de otimização. Já implementados: Redis cache (queries complexas), database indexing (20 novos índices), lazy loading de imagens, e code splitting. Resultados parciais: redução de 65% no tempo de resposta, 40% menos consumo de memória. Próximos passos: CDN setup, minificação de assets, worker threads para processos pesados. Meta: suportar 10.000 usuários simultâneos."
+            },
+            {
+                id: 5,
+                titulo: "Sprint 5 - Features Avançadas e Automações",
+                inicio: "2025-11-26",
+                fim: "2025-12-09",
+                foco: "Automações",
+                prioridade: "Alta",
+                responsaveis: ["Renan Sena", "Carolina Silva"],
+                progresso: 20,
+                tarefasPlanned: 22,
+                tarefasDone: 4,
+                nota: "🔄 Sprint em preparação. Features planejadas: workflow builder visual (drag-and-drop), triggers automáticos (new lead, deal moved, etc), integração com Zapier/Make, templates de automação pré-configurados, e sistema de notificações inteligentes. Design aprovado, começando implementação. 4 tasks de infraestrutura já concluídas."
+            },
+            {
+                id: 6,
+                titulo: "Sprint 6 - Preparação Final e Checklist de Lançamento",
+                inicio: "2025-12-10",
+                fim: "2025-12-23",
+                foco: "Lançamento",
+                prioridade: "Alta",
+                responsaveis: ["Renan Sena", "Osmin Pedro", "Carolina Silva"],
+                progresso: 0,
+                tarefasPlanned: 25,
+                tarefasDone: 0,
+                nota: "⏳ Aguardando início. Checklist completo preparado: testes de carga (1000+ usuários simultâneos), testes de segurança e penetração, auditoria de código, setup de monitoramento 24/7 (Datadog + PagerDuty), documentação de usuário final, vídeos tutoriais, treinamento da equipe de suporte, e plano de rollback. Go-live previsto para 23/12/2025."
+            },
+            {
+                id: 7,
+                titulo: "Sprint 7 - Lançamento MVP e Monitoramento Intensivo",
+                inicio: "2025-12-24",
+                fim: "2026-01-06",
+                foco: "Deploy",
+                prioridade: "Alta",
+                responsaveis: ["Osmin Pedro", "Renan Sena"],
+                progresso: 0,
+                tarefasPlanned: 20,
+                tarefasDone: 0,
+                nota: "⏳ Planejado. Deploy em produção com estratégia gradual: dia 1-2 (10% dos usuários), dia 3-4 (30%), dia 5-6 (60%), dia 7+ (100%). Monitoramento 24/7 ativo, war room configurada, plantão de desenvolvedores. Métricas críticas sendo rastreadas: uptime, latência, taxa de erro, conversão. Hotfix team em standby."
+            },
+            {
+                id: 8,
+                titulo: "Sprint 8 - Ajustes Pós-Lançamento e Quick Wins",
+                inicio: "2026-01-07",
+                fim: "2026-01-20",
+                foco: "Melhorias",
+                prioridade: "Média",
+                responsaveis: ["Carolina Silva", "Renan Sena"],
+                progresso: 0,
+                tarefasPlanned: 16,
+                tarefasDone: 0,
+                nota: "⏳ Planejado. Sprint dedicada a correções rápidas e melhorias baseadas no feedback real dos primeiros usuários em produção. Priorização dinâmica baseada em impacto vs esforço. Sistema de votação de features ativado para clientes. Análise de métricas de uso para identificar gargalos."
+            }
+        ];
+
+        // 📁 ARQUIVOS COMPARTILHADOS
+        // ════════════════════════════════════════
+        // ✏️ Array com arquivos disponíveis. Campos: nome, tipo (extensão), url
+        const arquivosCompartilhados = [
+            { 
+                nome: "Escopo_Completo_Upperchat_v3.2.pdf", 
+                tipo: "PDF", 
+                url: "#",
+                tamanho: "2.4 MB",
+                dataUpload: "2025-10-01"
+            },
+            { 
+                nome: "Relatorio_Beta_Tests_Completo.xlsx", 
+                tipo: "XLSX", 
+                url: "#",
+                tamanho: "856 KB",
+                dataUpload: "2025-10-28"
+            },
+            { 
+                nome: "Wireframes_Final_v2.5_Figma.fig", 
+                tipo: "FIG", 
+                url: "#",
+                tamanho: "12.8 MB",
+                dataUpload: "2025-10-15"
+            },
+            { 
+                nome: "Documentacao_API_Reference_v1.0.pdf", 
+                tipo: "PDF", 
+                url: "#",
+                tamanho: "3.1 MB",
+                dataUpload: "2025-10-14"
+            },
+            { 
+                nome: "Manual_Usuario_Final_PT-BR.pdf", 
+                tipo: "PDF", 
+                url: "#",
+                tamanho: "5.7 MB",
+                dataUpload: "2025-11-01"
+            },
+            { 
+                nome: "Apresentacao_Cliente_Executiva.pptx", 
+                tipo: "PPTX", 
+                url: "#",
+                tamanho: "18.2 MB",
+                dataUpload: "2025-10-20"
+            },
+            { 
+                nome: "Analise_Competitiva_CRM_2025.xlsx", 
+                tipo: "XLSX", 
+                url: "#",
+                tamanho: "1.2 MB",
+                dataUpload: "2025-09-28"
+            },
+            { 
+                nome: "Diagrama_Arquitetura_Sistema.pdf", 
+                tipo: "PDF", 
+                url: "#",
+                tamanho: "1.8 MB",
+                dataUpload: "2025-10-05"
+            },
+            { 
+                nome: "Roadmap_2026_Upperchat.pdf", 
+                tipo: "PDF", 
+                url: "#",
+                tamanho: "950 KB",
+                dataUpload: "2025-10-30"
+            },
+            { 
+                nome: "Metricas_Performance_Outubro.xlsx", 
+                tipo: "XLSX", 
+                url: "#",
+                tamanho: "643 KB",
+                dataUpload: "2025-10-31"
+            }
+        ];
+
+        // ⚙️ CONFIGURAÇÕES DE VISUALIZAÇÃO
+        // ════════════════════════════════════════
+        const mostrarComentarios = true;  // ✏️ true = mostra seção de comentários | false = oculta
+    </script>
+
+    <!-- ========================================
+         MENU SUPERIOR
+    ======================================== -->
+    <nav class="menu-superior">
+        <a href="#" class="menu-logo">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100" height="100" rx="20" fill="#F93D00"/>
+                <path d="M30 70V30L50 45L70 30V70L50 55L30 70Z" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round"/>
+            </svg>
+            <span>Upperfy</span>
+        </a>
+        <div class="menu-nav">
+            <a href="#" id="linkTelaPrincipal">Tela Principal</a>
+            <a href="#" id="linkSobre" target="_blank">Sobre a Upperfy</a>
+            <a href="#" id="linkPerfil">Meu Perfil</a>
+        </div>
+    </nav>
+
+    <!-- ========================================
+         CONTAINER PRINCIPAL
+    ======================================== -->
+    <div class="container">
+        <!-- Grid: Card Resumo + Cronograma -->
+        <div class="dashboard-grid">
+            <!-- CARD RESUMO DO PROJETO -->
+            <div class="card">
+                <h2 class="card-title">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                    Informações do Projeto
+                </h2>
+                <div class="projeto-info" id="projetoInfo">
+                    <!-- Conteúdo será gerado via JavaScript -->
+                </div>
+            </div>
+
+            <!-- CRONOGRAMA -->
+            <div class="card cronograma-container">
+                <h2 class="card-title">
+                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                    </svg>
+                    Cronograma de Sprints
+                </h2>
+
+                <!-- Filtros -->
+                <div class="filtros">
+                    <div class="filtro-group">
+                        <label>Sprint Focus</label>
+                        <select id="filtroFoco">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="filtro-group">
+                        <label>Prioridade</label>
+                        <select id="filtroPrioridade">
+                            <option value="">Todas</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Média">Média</option>
+                            <option value="Baixa">Baixa</option>
+                        </select>
+                    </div>
+                    <div class="filtro-group">
+                        <label>Responsável</label>
+                        <select id="filtroResponsavel">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="timeline" id="timeline">
+                    <!-- Sprints serão gerados via JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- GRÁFICO DE EXECUÇÃO -->
+        <div class="card grafico-container">
+            <h2 class="card-title">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+                </svg>
+                Análise de Execução
+            </h2>
+            <div class="grafico-wrapper">
+                <canvas id="graficoExecucao"></canvas>
+            </div>
+        </div>
+
+        <!-- BOTÃO ARQUIVOS COMPARTILHADOS -->
+        <div class="mb-2 text-center">
+            <button class="btn btn-primary" onclick="abrirModalArquivos()">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
+                </svg>
+                Arquivos Compartilhados
+            </button>
+        </div>
+
+        <!-- COMENTÁRIOS -->
+        <div class="card" id="comentariosCard" style="display: none;">
+            <h2 class="card-title">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                </svg>
+                Comentários do Projeto
+            </h2>
+            <div class="comentarios-lista" id="comentariosLista">
+                <!-- Comentários serão gerados via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DETALHES DA SPRINT -->
+    <div class="modal" id="modalSprint">
+        <div class="modal-content">
+            <button class="modal-close" onclick="fecharModal('modalSprint')">×</button>
+            <h3 class="modal-title" id="modalSprintTitulo"></h3>
+            <div id="modalSprintConteudo"></div>
+        </div>
+    </div>
+
+    <!-- MODAL ARQUIVOS COMPARTILHADOS -->
+    <div class="modal" id="modalArquivos">
+        <div class="modal-content">
+            <button class="modal-close" onclick="fecharModal('modalArquivos')">×</button>
+            <h3 class="modal-title">Arquivos Compartilhados</h3>
+            <div class="arquivos-lista" id="arquivosLista">
+                <!-- Arquivos serão gerados via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================
+         JAVASCRIPT - LÓGICA DO PAINEL
+    ======================================== -->
+    <script>
+        // ========================================
+        // FUNÇÕES AUXILIARES
+        // ========================================
+
+        // Formatar data para exibição
+        function formatarData(dataISO) {
+            const data = new Date(dataISO);
+            return data.toLocaleDateString('pt-BR', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Formatar data simples (sem hora)
+        function formatarDataSimples(dataISO) {
+            const data = new Date(dataISO);
+            return data.toLocaleDateString('pt-BR', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric'
+            });
+        }
+
+        // Obter classe CSS da tag de tipo
+        function getTagClass(tipo) {
+            const classes = {
+                'App': 'tag-app',
+                'Servidor': 'tag-servidor',
+                'Web': 'tag-web',
+                'Mobile': 'tag-app'
+            };
+            return classes[tipo] || 'tag-app';
+        }
+
+        // Obter classe CSS da prioridade
+        function getPrioridadeClass(prioridade) {
+            const classes = {
+                'Alta': 'tag-prioridade-alta',
+                'Média': 'tag-prioridade-media',
+                'Baixa': 'tag-prioridade-baixa'
+            };
+            return classes[prioridade] || 'tag-prioridade-media';
+        }
+
+        // ========================================
+        // RENDERIZAR INFORMAÇÕES DO PROJETO
+        // ========================================
+        function renderizarProjetoInfo() {
+            const container = document.getElementById('projetoInfo');
+            
+            const html = `
+                <!-- Nome do Projeto -->
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Nome do Projeto</div>
+                        <div class="info-value">${projetoNome}</div>
+                    </div>
+                </div>
+
+                <!-- Número ID -->
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Nº ID</div>
+                        <div class="info-value">${numeroID}</div>
+                    </div>
+                </div>
+
+                <!-- Tipo de Projeto -->
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16z"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Tipo de Projeto</div>
+                        <div class="info-value">
+                            ${tipoProjeto.map(tipo => `<span class="tag ${getTagClass(tipo)}">${tipo}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sprint Focus -->
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Sprint Focus Atual</div>
+                        <div class="info-value">${sprintFocus}</div>
+                    </div>
+                </div>
+
+                <!-- Briefing -->
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Briefing / Conceito</div>
+                        <div class="info-value">${briefing}</div>
+                    </div>
+                </div>
+
+                <!-- Empresa -->
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Empresa / Projeto</div>
+                        <div class="info-value">${empresaProjeto}</div>
+                    </div>
+                </div>
+
+                <!-- Prioridade -->
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Prioridade</div>
+                        <div class="info-value">
+                            <span class="tag ${getPrioridadeClass(prioridade)}">${prioridade}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Responsáveis -->
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Responsáveis</div>
+                        <div class="info-value">
+                            ${responsaveis.map(resp => `<span class="responsavel-badge">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                </svg>
+                                ${resp}
+                            </span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Próxima Task -->
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Próxima Task</div>
+                        <div class="info-value">${proximaTask}</div>
+                    </div>
+                </div>
+
+                <!-- Criado Em -->
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Criado em</div>
+                        <div class="info-value">${formatarData(criadoEm)}</div>
+                    </div>
+                </div>
+
+                <!-- Última Edição -->
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Última Edição</div>
+                        <div class="info-value">${formatarData(ultimaEdicao)}</div>
+                    </div>
+                </div>
+
+                ${duns ? `
+                <!-- D-U-N-S -->
+                <div class="info-row">
+                    <div class="info-icon">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/>
+                        </svg>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">D-U-N-S</div>
+                        <div class="info-value">${duns}</div>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        // ========================================
+        // RENDERIZAR CRONOGRAMA
+        // ========================================
+        function renderizarCronograma() {
+            const container = document.getElementById('timeline');
+            let sprintsFiltrados = [...sprints];
+
+            // Aplicar filtros
+            const filtroFoco = document.getElementById('filtroFoco').value;
+            const filtroPrioridade = document.getElementById('filtroPrioridade').value;
+            const filtroResponsavel = document.getElementById('filtroResponsavel').value;
+
+            if (filtroFoco) {
+                sprintsFiltrados = sprintsFiltrados.filter(s => s.foco === filtroFoco);
+            }
+            if (filtroPrioridade) {
+                sprintsFiltrados = sprintsFiltrados.filter(s => s.prioridade === filtroPrioridade);
+            }
+            if (filtroResponsavel) {
+                sprintsFiltrados = sprintsFiltrados.filter(s => s.responsaveis.includes(filtroResponsavel));
+            }
+
+            const html = sprintsFiltrados.map(sprint => `
+                <div class="sprint-item" onclick="abrirModalSprint(${sprint.id})">
+                    <div class="sprint-header">
+                        <div>
+                            <div class="sprint-titulo">${sprint.titulo}</div>
+                            <div class="sprint-datas">
+                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                                </svg>
+                                ${formatarDataSimples(sprint.inicio)} até ${formatarDataSimples(sprint.fim)}
+                            </div>
+                        </div>
+                        <span class="tag ${getPrioridadeClass(sprint.prioridade)}">${sprint.prioridade}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${sprint.progresso}%"></div>
+                    </div>
+                    <div class="sprint-info-mini">
+                        <span>Progresso: ${sprint.progresso}%</span>
+                        <span>Tarefas: ${sprint.tarefasDone}/${sprint.tarefasPlanned}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = html || '<p style="text-align: center; color: #999;">Nenhuma sprint encontrada com os filtros aplicados.</p>';
+        }
+
+        // ========================================
+        // POPULAR FILTROS
+        // ========================================
+        function popularFiltros() {
+            // Focos únicos
+            const focos = [...new Set(sprints.map(s => s.foco))];
+            const selectFoco = document.getElementById('filtroFoco');
+            focos.forEach(foco => {
+                const option = document.createElement('option');
+                option.value = foco;
+                option.textContent = foco;
+                selectFoco.appendChild(option);
+            });
+
+            // Responsáveis únicos
+            const responsaveisUnicos = [...new Set(sprints.flatMap(s => s.responsaveis))];
+            const selectResponsavel = document.getElementById('filtroResponsavel');
+            responsaveisUnicos.forEach(resp => {
+                const option = document.createElement('option');
+                option.value = resp;
+                option.textContent = resp;
+                selectResponsavel.appendChild(option);
+            });
+        }
+
+        // ========================================
+        // MODAL DA SPRINT
+        // ========================================
+        function abrirModalSprint(sprintId) {
+            const sprint = sprints.find(s => s.id === sprintId);
+            if (!sprint) return;
+
+            const modal = document.getElementById('modalSprint');
+            const titulo = document.getElementById('modalSprintTitulo');
+            const conteudo = document.getElementById('modalSprintConteudo');
+
+            titulo.textContent = sprint.titulo;
+
+            const html = `
+                <div class="modal-section">
+                    <div class="modal-section-title">📅 Período</div>
+                    <p>${formatarDataSimples(sprint.inicio)} até ${formatarDataSimples(sprint.fim)}</p>
+                </div>
+
+                <div class="modal-section">
+                    <div class="modal-section-title">🎯 Foco</div>
+                    <p>${sprint.foco}</p>
+                </div>
+
+                <div class="modal-section">
+                    <div class="modal-section-title">⚡ Prioridade</div>
+                    <span class="tag ${getPrioridadeClass(sprint.prioridade)}">${sprint.prioridade}</span>
+                </div>
+
+                <div class="modal-section">
+                    <div class="modal-section-title">👥 Responsáveis</div>
+                    <div>
+                        ${sprint.responsaveis.map(resp => `<span class="responsavel-badge">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                            ${resp}
+                        </span>`).join('')}
+                    </div>
+                </div>
+
+                <div class="modal-section">
+                    <div class="modal-section-title">📊 Progresso</div>
+                    <div class="progress-bar" style="margin-bottom: 0.5rem;">
+                        <div class="progress-fill" style="width: ${sprint.progresso}%"></div>
+                    </div>
+                    <p style="font-size: 0.9rem; color: #666;">
+                        ${sprint.progresso}% completo • ${sprint.tarefasDone} de ${sprint.tarefasPlanned} tarefas concluídas
+                    </p>
+                </div>
+
+                <div class="modal-section">
+                    <div class="modal-section-title">📝 Notas Técnicas</div>
+                    <p style="line-height: 1.7; white-space: pre-line;">${sprint.nota}</p>
+                </div>
+            `;
+
+            conteudo.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        // ========================================
+        // MODAL ARQUIVOS
+        // ========================================
+        function abrirModalArquivos() {
+            const modal = document.getElementById('modalArquivos');
+            const lista = document.getElementById('arquivosLista');
+
+            const html = arquivosCompartilhados.map(arquivo => `
+                <div class="arquivo-item">
+                    <div class="arquivo-info">
+                        <div class="arquivo-icon">${arquivo.tipo}</div>
+                        <div>
+                            <div class="arquivo-nome">${arquivo.nome}</div>
+                            ${arquivo.tamanho ? `<div style="font-size: 0.85rem; color: #999;">${arquivo.tamanho} • ${formatarDataSimples(arquivo.dataUpload)}</div>` : ''}
+                        </div>
+                    </div>
+                    <a href="${arquivo.url}" class="arquivo-link" download>
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                        </svg>
+                        Download
+                    </a>
+                </div>
+            `).join('');
+
+            lista.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        // ========================================
+        // FECHAR MODAL
+        // ========================================
+        function fecharModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Fechar modal ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        });
+
+        // ========================================
+        // RENDERIZAR COMENTÁRIOS
+        // ========================================
+        function renderizarComentarios() {
+            if (!mostrarComentarios || comentarios.length === 0) return;
+
+            const card = document.getElementById('comentariosCard');
+            const lista = document.getElementById('comentariosLista');
+
+            card.style.display = 'block';
+
+            const html = comentarios.map(comentario => `
+                <div class="comentario-item">
+                    <div class="comentario-header">
+                        <span class="comentario-autor">${comentario.autor}</span>
+                        <span class="comentario-data">${formatarData(comentario.data)}</span>
+                    </div>
+                    <div class="comentario-texto">${comentario.texto}</div>
+                </div>
+            `).join('');
+
+            lista.innerHTML = html;
+        }
+
+        // ========================================
+        // GRÁFICO DE EXECUÇÃO
+        // ========================================
+        function criarGrafico() {
+            const ctx = document.getElementById('graficoExecucao').getContext('2d');
+
+            // Preparar dados
+            const labels = sprints.map(s => `Sprint ${s.id}`);
+            const progressoData = sprints.map(s => s.progresso);
+            const tarefasConcluidasData = sprints.map(s => (s.tarefasDone / s.tarefasPlanned) * 100);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Progresso Geral (%)',
+                            data: progressoData,
+                            backgroundColor: 'rgba(249, 61, 0, 0.6)',
+                            borderColor: 'rgba(249, 61, 0, 1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Tarefas Concluídas (%)',
+                            data: tarefasConcluidasData,
+                            backgroundColor: 'rgba(39, 9, 73, 0.6)',
+                            borderColor: 'rgba(39, 9, 73, 1)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    family: 'Montserrat',
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(0) + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                },
+                                font: {
+                                    family: 'Montserrat'
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    family: 'Montserrat'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ========================================
+        // CONFIGURAR LINKS DO MENU
+        // ========================================
+        function configurarLinks() {
+            document.getElementById('linkSobre').href = linkSobreUpperfy;
+            document.getElementById('linkPerfil').href = linkMeuPerfil;
+        }
+
+        // ========================================
+        // INICIALIZAÇÃO
+        // ========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            configurarLinks();
+            renderizarProjetoInfo();
+            popularFiltros();
+            renderizarCronograma();
+            renderizarComentarios();
+            criarGrafico();
+
+            // Event listeners para filtros
+            document.getElementById('filtroFoco').addEventListener('change', renderizarCronograma);
+            document.getElementById('filtroPrioridade').addEventListener('change', renderizarCronograma);
+            document.getElementById('filtroResponsavel').addEventListener('change', renderizarCronograma);
+        });
+    </script>
+
+</body>
+</html>
